@@ -5,6 +5,10 @@ import gregicadditions.item.CellCasing;
 import gregicadditions.item.GAHeatingCoil;
 import gregicadditions.item.GAMetaBlocks;
 import gregicadditions.item.components.*;
+import gregicadditions.item.fusion.GACryostatCasing;
+import gregicadditions.item.fusion.GADivertorCasing;
+import gregicadditions.item.fusion.GAFusionCasing;
+import gregicadditions.item.fusion.GAVacuumCasing;
 import gregtech.common.blocks.BlockWireCoil;
 import gregtech.common.blocks.MetaBlocks;
 import gregtech.integration.jei.multiblock.channel.ChannelDescription;
@@ -61,20 +65,34 @@ public final class GAChannelRegistry {
                 CellCasing.CellType.values(),
                 type -> GAMetaBlocks.CELL_CASING.getItemVariant(type)
         );
-        
+
+        registerIndicators(StructureChannels.FUSION_COIL,
+               new GAFusionCasing.CasingType[] {
+                       GAFusionCasing.CasingType.ADV_FUSION_COIL_1,
+                       GAFusionCasing.CasingType.ADV_FUSION_COIL_2,
+                       GAFusionCasing.CasingType.ADV_FUSION_COIL_3,
+                       GAFusionCasing.CasingType.ADV_FUSION_COIL_4,
+                       GAFusionCasing.CasingType.ADV_FUSION_COIL_5,
+               },
+                type -> (GAMetaBlocks.FUSION_CASING.getItemVariant(type)));
+
+        registerIndicators(StructureChannels.CRYOSTAT_CASING,
+                GACryostatCasing.CasingType.values(),
+                type ->(GAMetaBlocks.CRYOSTAT_CASING.getItemVariant(type)));
+
+        registerIndicators(StructureChannels.VACUUM_CASING,
+                GAVacuumCasing.CasingType.values(),
+                type ->(GAMetaBlocks.VACUUM_CASING.getItemVariant(type)));
+
+        registerIndicators(StructureChannels.DIVERTOR_CASING,
+                GADivertorCasing.CasingType.values(),
+                type ->(GAMetaBlocks.DIVERTOR_CASING.getItemVariant(type)));
     }
 
     public static void addToChannels() {
         int counter = 10;
         for (GAHeatingCoil.CoilType type : GAHeatingCoil.CoilType.values()) {
             StructureChannels.COIL.registerIndicator(GAMetaBlocks.HEATING_COIL.getItemVariant(type), counter++);
-        }
-
-        counter = 0;
-        var a = ChannelDescription.get("coil").getItems();
-        for (var te : a.entrySet()) {
-            System.out.println(te.getKey().toString() + counter);
-            counter++;
         }
     }
 

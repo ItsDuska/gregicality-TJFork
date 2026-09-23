@@ -11,6 +11,7 @@ import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
 import gregtech.common.metatileentities.MetaTileEntities;
 import gregtech.integration.jei.multiblock.MultiblockInfoPage;
 import gregtech.integration.jei.multiblock.MultiblockShapeInfo;
+import gregtech.integration.jei.multiblock.channel.PlaceholderType;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
@@ -27,10 +28,6 @@ public class FusionReactor4Info extends MultiblockInfoPage {
         return GATileEntities.ADVANCED_FUSION_REACTOR;
     }
 
-
-
-
-    // TODO: FIX ME. Loopissa oli 0-5 + 4 casing. ELI TÄHÄN MENEE JOKO FUSION COIL 1-5. TEE SILLE OMA PAIKKA
     @Override
     public MultiblockShapeInfo getMatchingShapes(int extent) {
         return GAMultiblockShapeInfo.builder()
@@ -51,15 +48,16 @@ public class FusionReactor4Info extends MultiblockInfoPage {
             .aisle("###############", "###############","#####ccCcc#####","#####ccCcc#####","###############","###############")
             .where('S', GATileEntities.ADVANCED_FUSION_REACTOR, EnumFacing.SOUTH)
             .where('#', Blocks.AIR.getDefaultState())
-            .where('C', GAMetaBlocks.FUSION_CASING.getState(GAFusionCasing.CasingType.values()[4]))
+            .where('C', PlaceholderType.FUSION_COIL, GAMetaBlocks.FUSION_CASING.getState(GAFusionCasing.CasingType.values()[4])) //1-4
             .where('X', GAMetaBlocks.FUSION_CASING.getState(GAFusionCasing.CasingType.ADV_FUSION_CASING))
             .where('f', MetaTileEntities.FLUID_IMPORT_HATCH[8], EnumFacing.SOUTH)
             .where('F', MetaTileEntities.FLUID_EXPORT_HATCH[8], EnumFacing.SOUTH)
-            .where('E', GATileEntities.ENERGY_INPUT[0], EnumFacing.NORTH)
-            .where('c', GAMetaBlocks.CRYOSTAT_CASING.getState(GACryostatCasing.CasingType.values()[0])) // 1-4
-            .where('v', GAMetaBlocks.VACUUM_CASING.getState(GAVacuumCasing.CasingType.values()[0])) // 1-4
+            .where('E', PlaceholderType.ENERGY_INPUT_HATCH, GATileEntities.getEnergyHatch(9,false), EnumFacing.NORTH)
+                //.where('E', PlaceholderType.ENERGY_INPUT_HATCH, GATileEntities.ENERGY_INPUT[9], EnumFacing.NORTH)
+            .where('c', PlaceholderType.CRYOSTAT_CASING, GAMetaBlocks.CRYOSTAT_CASING.getState(GACryostatCasing.CasingType.values()[0])) // 1-4
+            .where('v', PlaceholderType.VACUUM_CASING, GAMetaBlocks.VACUUM_CASING.getState(GAVacuumCasing.CasingType.values()[0])) // 1-4
             .where('b', GAMetaBlocks.FUSION_CASING.getState(GAFusionCasing.CasingType.FUSION_BLANKET))
-            .where('d', GAMetaBlocks.DIVERTOR_CASING.getState(GADivertorCasing.CasingType.values()[0])) // 1-4
+            .where('d', PlaceholderType.DIVERTOR_CASING, GAMetaBlocks.DIVERTOR_CASING.getState(GADivertorCasing.CasingType.values()[0])) // 1-4
             .build();
 
     }

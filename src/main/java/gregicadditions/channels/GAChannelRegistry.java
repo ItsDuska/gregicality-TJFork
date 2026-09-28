@@ -13,15 +13,20 @@ import gregicadditions.item.fusion.GAVacuumCasing;
 import gregicadditions.item.metal.NuclearCasing;
 import gregicadditions.machines.GATileEntities;
 import gregtech.api.util.BlockInfo;
+import gregtech.common.blocks.BlockWireCoil;
+import gregtech.common.blocks.MetaBlocks;
 import gregtech.common.channels.ChannelRegistry;
 import gregtech.integration.jei.multiblock.channel.Channel;
 
 import gregtech.integration.jei.multiblock.channel.PlaceholderType;
+import net.minecraft.block.state.IBlockState;
+
+import java.util.List;
 
 
 public final class GAChannelRegistry {
     public static final Channel COMPONENT = Channel.createDriver("component");
-    public static final Channel FUSION_PARTS = Channel.createDriver("fusion casing");
+    public static final Channel FUSION_PARTS = Channel.create("fusion parts");
 
 
     public static final PlaceholderType MOTOR = PlaceholderType.create("motor");
@@ -46,7 +51,6 @@ public final class GAChannelRegistry {
 
 
     public static void init() {
-        // ---- COMPONENT group: one shared channel, generic registration per type ----
         MOTOR.registerVariant(COMPONENT, MotorCasing.CasingType.values(),
                 type -> GAMetaBlocks.MOTOR_CASING.getItemVariant(type),
                 type -> GAMetaBlocks.MOTOR_CASING.getState(type)
@@ -113,12 +117,13 @@ public final class GAChannelRegistry {
 
 
         Channel cell = Channel.create("cell");
-        int counter = 1;
-        for (CellCasing.CellType type : CellCasing.CellType.values()) {
-            cell.registerIndicator(GAMetaBlocks.CELL_CASING.getItemVariant(type), counter++);
-        }
 
-        counter = Channel.COIL.getIndicatorMaxValue() + 1;
+        CELL.registerVariant(cell, CellCasing.CellType.values(),
+                type -> GAMetaBlocks.CELL_CASING.getItemVariant(type),
+                type -> GAMetaBlocks.CELL_CASING.getState(type));
+
+
+        int counter = Channel.COIL.getIndicatorMaxValue() + 1;
         for (GAHeatingCoil.CoilType type : GAHeatingCoil.CoilType.values()) {
             Channel.COIL.registerIndicator(GAMetaBlocks.HEATING_COIL.getItemVariant(type), counter++);
         }
@@ -126,36 +131,48 @@ public final class GAChannelRegistry {
 
         CELL.registerResolver(context -> new BlockInfo(GAMetaBlocks.CELL_CASING.getState(
                 CellCasing.CellType.values()[PlaceholderType.clampIndex(
-                        context.getTier(Channel.VOLTAGE), 3, CellCasing.CellType.values().length)]))
+                        context.getTier(Channel.VOLTAGE), 3, CellCasing.CellType.values().length)])), Channel.VOLTAGE
         );
 
         NUCLEAR_CASING.registerResolver(context -> new BlockInfo(GAMetaBlocks.NUCLEAR_CASING.getState(
                 NuclearCasing.CasingType.values()[PlaceholderType.clampIndex(
-                        context.getTier(Channel.VOLTAGE), 0, NuclearCasing.CasingType.values().length)]))
+                        context.getTier(Channel.VOLTAGE), 0, NuclearCasing.CasingType.values().length)])), Channel.VOLTAGE
         );
 
         GLASS.registerResolver(context -> new BlockInfo(GAMetaBlocks.TRANSPARENT_CASING.getState(
                 GATransparentCasing.CasingType.values()[PlaceholderType.clampIndex(
-                        context.getTier(Channel.VOLTAGE), 0, GATransparentCasing.CasingType.values().length)]))
+                        context.getTier(Channel.VOLTAGE), 0, GATransparentCasing.CasingType.values().length)])), Channel.VOLTAGE
         );
 
         MUFFLER.registerResolver(context -> PlaceholderType.mteHolder(
                 GATileEntities.MUFFLER_HATCH[PlaceholderType.clampIndex(
-                        context.getTier(Channel.VOLTAGE), 1, GATileEntities.MUFFLER_HATCH.length)],
-                context.facing));
+                        context.getTier(Channel.VOLTAGE), 1, GATileEntities.MUFFLER_HATCH.length)], context.facing), Channel.VOLTAGE
+        );
 
-        FRAMEWORK.registerResolver(context -> new BlockInfo(GAMetaBlocks.getFramework(context.getTier(Channel.VOLTAGE))));
+        FRAMEWORK.registerResolver(context -> new BlockInfo(GAMetaBlocks.getFramework(context.getTier(Channel.VOLTAGE))), Channel.VOLTAGE);
 
 
         // ---- Overrides of GT-core's own ChannelRegistry entries
-        ChannelRegistry.COIL.registerResolver(context -> new BlockInfo(GAMetaBlocks.getCoils(Math.min(context.getTier(Channel.COIL), 14))));
+        ChannelRegistry.COIL.registerResolver(context -> {
+            List<BlockWireCoil.CoilType> gtCoils = ChannelRegistry.PREVIEW_COILS;
+            GAHeatingCoil.CoilType[] gaCoils = GAHeatingCoil.CoilType.values();
+
+
+            int index = PlaceholderType.clampIndex(context.getTier(Channel.COIL), 1, gtCoils.size() + gaCoils.length);
+
+            if (index < gtCoils.size()) {
+                return new BlockInfo(MetaBlocks.WIRE_COIL.getState(gtCoils.get(index)));
+            }
+            return new BlockInfo(GAMetaBlocks.HEATING_COIL.getState(gaCoils[index - gtCoils.size()]));
+        }, Channel.COIL);
 
         ChannelRegistry.ENERGY_INPUT_HATCH.registerResolver(context -> PlaceholderType.mteHolder(
-                GATileEntities.getEnergyHatch(context.getTier(Channel.VOLTAGE), false), context.facing)
+                GATileEntities.getEnergyHatch(context.getTier(Channel.VOLTAGE), false), context.facing), Channel.VOLTAGE
         );
 
         ChannelRegistry.ENERGY_OUTPUT_HATCH.registerResolver(context -> PlaceholderType.mteHolder(
-                GATileEntities.getEnergyHatch(context.getTier(Channel.VOLTAGE), true), context.facing)
+                GATileEntities.getEnergyHatch(context.getTier(Channel.VOLTAGE), true), context.facing), Channel.VOLTAGE
         );
     }
+
 }

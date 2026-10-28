@@ -640,13 +640,13 @@ public class RecipeHandler {
                 .input(plate, material, 9)
                 .output(densePlate, material, 1)
                 .circuitMeta(9)
-                .EUt(getTieredVoltageMultiplier(material))
+                .EUt(Math.max(getTieredVoltageMultiplier(material), 100))
                 .buildAndRegister();
         BENDER_RECIPES.recipeBuilder().duration((int) material.getAverageMass() * 9)
                 .input(ingot, material, 9)
                 .output(densePlate, material, 1)
                 .circuitMeta(9)
-                .EUt(getTieredVoltageMultiplier(material))
+                .EUt(Math.max(getTieredVoltageMultiplier(material), 100))
                 .buildAndRegister();
     }
 

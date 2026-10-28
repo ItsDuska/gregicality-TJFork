@@ -357,12 +357,10 @@ public class MetaTileEntityMEStockingBus extends MetaTileEntityMEInputBus implem
                     IAEItemStack result = monitor.extractItems(request, action, holder.getActionSource());
                     if (result != null) {
                         int extracted = (int) Math.min(result.getStackSize(), amount);
-                        if (this.trigger != null) {
-                            this.trigger.accept(0);
-                        }
                         if (extracted != 0) {
                             ItemStack resultStack = this.config.createItemStack();
                             resultStack.setCount(extracted);
+                            this.notifyMetaTileEntities();
                             return resultStack;
                         }
                     }
@@ -415,7 +413,7 @@ public class MetaTileEntityMEStockingBus extends MetaTileEntityMEInputBus implem
         private final MetaTileEntityMEStockingBus holder;
 
         public ExportOnlyAEStockingItemList(MetaTileEntityMEStockingBus holder, int slots, MetaTileEntity entityToNotify) {
-            super(holder, slots, entityToNotify);
+            super(holder, slots);
             this.holder = holder;
         }
 

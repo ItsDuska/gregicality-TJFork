@@ -16,8 +16,9 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import slimeknights.tconstruct.library.events.TinkerRegisterEvent;
 
-@Mod.EventBusSubscriber
+//@Mod.EventBusSubscriber
 public class TinkersEvents {
+	/*
 	@Optional.Method(modid = GAValues.MODID_TCON)
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
@@ -43,4 +44,6 @@ public class TinkersEvents {
 	private static boolean matches(TinkerRegisterEvent.MeltingRegisterEvent e, OrePrefix prefix, Material mat) {
 		return e.getRecipe().input.matches(NonNullList.withSize(1, OreDictUnifier.get(prefix, mat))).isPresent();
 	}
+
+	 */
 }
